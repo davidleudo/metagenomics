@@ -15,11 +15,13 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+/*
 include { MAG                     } from './workflows/mag'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_mag_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_mag_pipeline'
 include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_mag_pipeline'
-
+*/
+include { META_TEST               } from '/workspace/metagenomics/workflows/meta_test.nf'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     GENOME PARAMETER VALUES
@@ -36,6 +38,14 @@ include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_mag_
     NAMED WORKFLOWS FOR PIPELINE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+ch_reads = Channel.of([
+                        [ id:'meta_test', single_end:false ], // meta map
+                        [ 
+                            file( '/workspace/metagenomics/assets/data/muestra09.R1-003.fastq.gz', checkIfExists: true ), 
+                            file( '/workspace/metagenomics/assets/data/muestra09.R2-004.fastq.gz', checkIfExists: true )
+                        ]
+                    ])
+
 
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
@@ -43,15 +53,23 @@ include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_mag_
 workflow NFCORE_MAG {
 
     take:
+        ch_reads
+
+        /*
         raw_short_reads  // channel: samplesheet read in from --input
         raw_long_reads
         input_assemblies
+        */
 
     main:
 
     //
     // WORKFLOW: Run pipeline
     //
+    META_TEST(
+            ch_reads
+            )
+    /*
     MAG (
         raw_short_reads,  // channel: samplesheet read in from --input
         raw_long_reads,
@@ -59,6 +77,7 @@ workflow NFCORE_MAG {
     )
     emit:
     multiqc_report = MAG.out.multiqc_report // channel: /path/to/multiqc_report.html
+    */
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,7 +86,8 @@ workflow NFCORE_MAG {
 */
 
 workflow {
-
+    NFCORE_MAG(ch_reads)
+    /*
     main:
     //
     // SUBWORKFLOW: Run initialisation tasks
@@ -101,6 +121,7 @@ workflow {
         params.hook_url,
         NFCORE_MAG.out.multiqc_report
     )
+    */
 }
 
 /*
