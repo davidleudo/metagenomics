@@ -38,6 +38,7 @@ include { META_TEST               } from '/workspace/metagenomics/workflows/meta
     NAMED WORKFLOWS FOR PIPELINE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+/*
 ch_reads = Channel.of([
                         [ id:'meta_test', single_end:false ], // meta map
                         [ 
@@ -45,6 +46,16 @@ ch_reads = Channel.of([
                             file( '/workspace/metagenomics/assets/data/muestra09.R2-004.fastq.gz', checkIfExists: true )
                         ]
                     ])
+*/
+
+ch_reads = Channel.of([
+                        [ id:'meta_test_covid', single_end:false ], // meta map
+                        [ 
+                            file( '/workspace/metagenomics/assets/data/test_1.fastq.gz', checkIfExists: true ), 
+                            file( '/workspace/metagenomics/assets/data/test_2.fastq.gz', checkIfExists: true )
+                        ]
+                    ])
+
 
 
 //
